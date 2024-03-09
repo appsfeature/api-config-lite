@@ -15,6 +15,8 @@ public interface ResponseStatusCode {
     int BAD_GATEWAY = 502;
     int SERVICE_UNAVAILABLE = 503;
     int GATEWAY_TIMEOUT = 504;
+
+    int ERROR_BASE_URL = 601;
 }
 
 /*

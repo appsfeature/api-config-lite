@@ -59,7 +59,7 @@ public class ConfigManager {
                     "\nendPoint : " + endPoint
             );
 //            callback.onFailure(null, new Exception("Error : Base URL not set yet"));
-            callback.onError(ResponseStatusCode.BAD_REQUEST, new Exception("Error : Base URL not set yet"));
+            callback.onError(ResponseStatusCode.ERROR_BASE_URL, new Exception("Error : Base URL not set yet"));
         }
     }
 
