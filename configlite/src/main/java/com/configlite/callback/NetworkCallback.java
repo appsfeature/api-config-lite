@@ -14,13 +14,13 @@ public interface NetworkCallback {
         default void onResponse(Call<T> call, final retrofit2.Response<T> response) {
         }
 
-        void onFailure(Call<T> call, Exception e);
+        default void onFailure(Call<T> call, Exception e){
+        }
 
         default void onRetry(Retry retryCallback, Exception e) {
         }
 
-        default void onError(int responseCode, Exception e) {
-        }
+        void onError(int responseCode, Exception e);
 
         default void onRequestCompleted() {
         }

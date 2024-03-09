@@ -31,6 +31,17 @@ dependencies {
 public class AppApplication extends Application {
     private static final String BASE_URL = "http://yourdomain.com/apps/api/v1/database/";
 
+    private static volatile AppApplication instance;
+
+    public static AppApplication getInstance() {
+        if (instance == null) {
+            synchronized (AppApplication.class) {
+                if (instance == null) instance = new AppApplication();
+            }
+        }
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -49,7 +60,7 @@ public class AppApplication extends Application {
         }
         return configManager;
     }
-
+}
 ```
 
 ```java
