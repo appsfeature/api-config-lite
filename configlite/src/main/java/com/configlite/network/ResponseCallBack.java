@@ -51,7 +51,7 @@ public class ResponseCallBack<T> implements Callback<T> {
                 }else {
                     onNetworkCall.onComplete(true, response.body());
                 }
-                onNetworkCall.onResponse(call, response);
+//                onNetworkCall.onResponse(call, response);
             } else {
                 notifyCallback(call, responseCode, new Throwable("Invalid response body"));
             }
@@ -85,8 +85,8 @@ public class ResponseCallBack<T> implements Callback<T> {
 
     private void notifyCallback(Call<T> call, int responseCode, Throwable t) {
         onNetworkCall.onComplete(false, null);
-        onNetworkCall.onResponse(call, null);
-        onNetworkCall.onFailure(call, new Exception(t));
+//        onNetworkCall.onResponse(call, null);
+//        onNetworkCall.onFailure(call, new Exception(t));
 
         NetworkCallback.Retry retryCallback = new NetworkCallback.Retry() {
             @Override

@@ -34,18 +34,13 @@ public class AppApplication extends Application {
     private static volatile AppApplication instance;
 
     public static AppApplication getInstance() {
-        if (instance == null) {
-            synchronized (AppApplication.class) {
-                if (instance == null) instance = new AppApplication();
-            }
-        }
-        return instance;
+           return instance;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        ...
+        instance = this;
         configManager = getConfigManager();
     }
 

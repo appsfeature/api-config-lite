@@ -58,7 +58,7 @@ public class ConfigManager {
                     "\nhostName : " + hostName,
                     "\nendPoint : " + endPoint
             );
-            callback.onFailure(null, new Exception("Error : Base URL not set yet"));
+//            callback.onFailure(null, new Exception("Error : Base URL not set yet"));
             callback.onError(ResponseStatusCode.BAD_REQUEST, new Exception("Error : Base URL not set yet"));
         }
     }
