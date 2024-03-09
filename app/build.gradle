@@ -1,15 +1,13 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
     namespace 'com.sample.apiconfiglite'
-    compileSdk 30
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "com.sample.apiconfiglite"
-        minSdk 19
-        targetSdk 30
+        minSdkVersion 16
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 

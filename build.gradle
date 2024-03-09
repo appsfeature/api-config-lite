@@ -1,12 +1,31 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '7.4.2' apply false
-    id 'com.android.library' version '7.4.2' apply false
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.1'
+    }
+}
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+
+    ext {
+        annotation = '1.0.0'
+
+        retrofit_version = '2.9.0'
+        retrofit_okhttp_version = '4.9.3'
+    }
 }
 
-ext {
-    annotation = '1.0.0'
-
-    retrofit_version = '2.9.0'
-    retrofit_okhttp_version = '4.9.3'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
