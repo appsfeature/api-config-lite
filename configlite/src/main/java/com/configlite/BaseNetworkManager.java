@@ -26,7 +26,7 @@ public class BaseNetworkManager {
         this.configManager = configManager;
     }
 
-    public void getRequest(Context context, String methodName, NetworkCallback.Callback<Boolean> callback) {
+    public void getData(Context context, String methodName, NetworkCallback.Callback<Boolean> callback) {
         Map<String, String> params = new HashMap<>();
         params.put("pkg_name", context.getPackageName());
         callback.onProgressUpdate(true);
@@ -38,7 +38,7 @@ public class BaseNetworkManager {
             }
 
             @Override
-            public void onFailure(Call<NetworkModel> call, Exception e) {
+            public void onError(int responseCode, Exception e) {
                 callback.onProgressUpdate(false);
                 callback.onFailure(e);
             }
