@@ -12,7 +12,6 @@ public class AppApplication extends Application {
     private static final String BASE_URL = "http://yourdomain.com/apps/api/v1/database/";
 
     private static volatile AppApplication instance;
-    private ConfigManager configManager;
 
     public static AppApplication getInstance() {
         if (instance == null) {
@@ -29,6 +28,8 @@ public class AppApplication extends Application {
         configManager = getConfigManager();
 
     }
+
+    private ConfigManager configManager;
 
     public ConfigManager getConfigManager() {
         if(configManager == null) {

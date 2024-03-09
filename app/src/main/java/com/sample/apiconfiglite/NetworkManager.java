@@ -19,5 +19,4 @@ public class NetworkManager extends BaseNetworkManager {
         }
         return instance;
     }
-
 }
