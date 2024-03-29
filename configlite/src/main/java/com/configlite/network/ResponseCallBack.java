@@ -24,9 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-/**
- * @author Abhijit Rao on 5/22/2017.
- */
+
 public class ResponseCallBack<T> implements Callback<T> {
 
     private final NetworkCallback.Response<T> onNetworkCall;

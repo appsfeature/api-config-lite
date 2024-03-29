@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.Map;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -18,9 +19,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by AppsFeature on 3/28/2018.
- */
 
 public class RetrofitBuilder {
 
@@ -48,8 +46,15 @@ public class RetrofitBuilder {
                         Request original = chain.request();
                         Request.Builder request = original.newBuilder()
                                 .method(original.method(), original.body());
-                        if(!TextUtils.isEmpty(securityCode)){
+                        if (!TextUtils.isEmpty(securityCode)) {
                             request.header("Authorization", securityCode);
+                        }
+                        if (ConfigManager.getInstance().getHeadersMap().size() > 0) {
+                            for (Map.Entry<String, String> entry : ConfigManager.getInstance().getHeadersMap().entrySet()) {
+                                String key = entry.getKey();
+                                String value = entry.getValue();
+                                request.addHeader(key, value);
+                            }
                         }
                         return chain.proceed(request.build());
                     }

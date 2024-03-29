@@ -22,6 +22,7 @@ public class ConfigManager {
     private static ConfigManager instance;
     private final HashMap<String, String> apiHostUrlHashMap = new HashMap<>();
     private final HashMap<String, RetrofitApiInterface> apiInterfaceHashMap = new HashMap<>();
+    private final HashMap<String, String> headersMap = new HashMap<>();
     public static final String HOST_DEFAULT = ApiHost.HOST_DEFAULT;
     private boolean isEnableDebugMode = false;
     private String securityCode;
@@ -118,6 +119,16 @@ public class ConfigManager {
 
     public ConfigManager setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
+        return this;
+    }
+
+    public HashMap<String, String> getHeadersMap() {
+        return headersMap;
+    }
+
+    public ConfigManager setHeadersMap(HashMap<String, String> headersMap) {
+        this.headersMap.clear();
+        this.headersMap.putAll(headersMap);
         return this;
     }
 

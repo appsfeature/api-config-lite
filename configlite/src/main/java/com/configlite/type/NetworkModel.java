@@ -8,9 +8,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
-/**
- * Created by AppsFeature on 3/29/2018.
- */
 
 public class NetworkModel {
 

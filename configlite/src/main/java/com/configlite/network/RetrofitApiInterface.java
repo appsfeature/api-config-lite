@@ -12,9 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 
-/**
- * @author Created by Abhijit on 2/28/2018.
- */
+
 public interface RetrofitApiInterface {
 
     @POST("{endpoint}")
