@@ -11,6 +11,7 @@ import com.configlite.network.RetrofitApiInterface;
 import com.configlite.network.RetrofitBuilder;
 import com.configlite.type.ApiHost;
 import com.configlite.type.ApiRequestType;
+import com.configlite.type.NetworkTimeOut;
 import com.configlite.type.ResponseStatusCode;
 import com.configlite.util.NetworkLog;
 import com.configlite.util.NetworkUtility;
@@ -26,6 +27,7 @@ public class ConfigManager {
     public static final String HOST_DEFAULT = ApiHost.HOST_DEFAULT;
     private boolean isEnableDebugMode = false;
     private String securityCode;
+    private NetworkTimeOut timeout;
 
     private ConfigManager() {
     }
@@ -113,6 +115,16 @@ public class ConfigManager {
         return this;
     }
 
+    public HashMap<String, String> getHeadersMap() {
+        return headersMap;
+    }
+
+    public ConfigManager setHeadersMap(HashMap<String, String> headersMap) {
+        this.headersMap.clear();
+        this.headersMap.putAll(headersMap);
+        return this;
+    }
+
     public String getSecurityCode() {
         return securityCode;
     }
@@ -122,13 +134,12 @@ public class ConfigManager {
         return this;
     }
 
-    public HashMap<String, String> getHeadersMap() {
-        return headersMap;
+    public NetworkTimeOut getTimeout() {
+        return timeout;
     }
 
-    public ConfigManager setHeadersMap(HashMap<String, String> headersMap) {
-        this.headersMap.clear();
-        this.headersMap.putAll(headersMap);
+    public ConfigManager setTimeout(NetworkTimeOut timeout) {
+        this.timeout = timeout;
         return this;
     }
 

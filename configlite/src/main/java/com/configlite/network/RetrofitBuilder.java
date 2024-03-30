@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -59,6 +60,11 @@ public class RetrofitBuilder {
                         return chain.proceed(request.build());
                     }
                 });
+        if(ConfigManager.getInstance().getTimeout() != null){
+            builder.readTimeout(ConfigManager.getInstance().getTimeout().getReadTimeout(), TimeUnit.SECONDS);
+            builder.connectTimeout(ConfigManager.getInstance().getTimeout().getConnectTimeout(), TimeUnit.SECONDS);
+            builder.writeTimeout(ConfigManager.getInstance().getTimeout().getWriteTimeout(), TimeUnit.SECONDS);
+        }
         if (isDebug) {
             builder.addInterceptor(loggingInterceptor);
         }
