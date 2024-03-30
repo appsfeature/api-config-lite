@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.configlite.ConfigManager;
 import com.configlite.type.ApiHost;
+import com.configlite.type.NetworkTimeOut;
 
 public class AppApplication extends Application {
 
@@ -33,8 +34,11 @@ public class AppApplication extends Application {
 
     public ConfigManager getConfigManager() {
         if(configManager == null) {
+            NetworkTimeOut timeout = new NetworkTimeOut();
+            timeout.setReadTimeout(30);
             configManager = ConfigManager.getInstance()
                     .setEnableDebugMode(BuildConfig.DEBUG)
+                    .setTimeout(timeout)
                     .setEnableSecurityCode(AppApplication.this)
                     .addHostUrl(ApiHost.HOST_DEFAULT, BASE_URL);
         }
