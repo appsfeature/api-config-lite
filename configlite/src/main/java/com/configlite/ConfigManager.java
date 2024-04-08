@@ -3,6 +3,7 @@ package com.configlite;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import com.configlite.callback.NetworkCallback;
 import com.configlite.type.NetworkModel;
@@ -16,8 +17,12 @@ import com.configlite.type.ResponseStatusCode;
 import com.configlite.util.NetworkLog;
 import com.configlite.util.NetworkUtility;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class ConfigManager {
     private static ConfigManager instance;
@@ -42,17 +47,44 @@ public class ConfigManager {
     }
 
     public void getData(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
+        getData(true, reqType, hostName, endPoint, params, callback);
+    }
+
+    @WorkerThread
+    public void getDataBackground(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
+        getData(false, reqType, hostName, endPoint, params, callback);
+    }
+
+    private void getData(boolean isRunOnMainThread, @ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
         RetrofitApiInterface apiInterface = getApiInterface(hostName);
         if(apiInterface != null) {
+            Call<NetworkModel> request;
             if (reqType == ApiRequestType.POST) {
-                apiInterface.requestPost(endPoint, params)
-                        .enqueue(new ResponseCallBack<>(callback));
+                request = apiInterface.requestPost(endPoint, params);
             } else if (reqType == ApiRequestType.POST_FORM) {
-                apiInterface.requestPostDataForm(endPoint, params)
-                        .enqueue(new ResponseCallBack<>(callback));
+                request = apiInterface.requestPostDataForm(endPoint, params);
             } else {
-                apiInterface.requestGet(endPoint, params)
-                        .enqueue(new ResponseCallBack<>(callback));
+                request = apiInterface.requestGet(endPoint, params);
+            }
+            if(isRunOnMainThread) {
+                request.enqueue(new ResponseCallBack<>(callback));
+            }else {
+                try {
+                    Response<NetworkModel> response = request.execute();
+                    ResponseCallBack<NetworkModel> responseCallback = new ResponseCallBack<>(callback);
+                    if (response.isSuccessful()) {
+                        responseCallback.onResponse(request, response);
+                    } else {
+                        responseCallback.onFailure(request, new Exception(response.message()));
+                    }
+                } catch (IOException e) {
+                    NetworkLog.logIntegration(TAG_OK_HTTP, NetworkLog.getClassPath(Thread.currentThread().getStackTrace()) ,
+                            "\nhostName : " + hostName,
+                            "\nendPoint : " + endPoint,
+                            e.toString()
+                    );
+                    callback.onError(ResponseStatusCode.ERROR_BASE_URL, new Exception("Error : Base URL not set yet"));
+                }
             }
         }else {
             NetworkLog.logIntegration(TAG_OK_HTTP, NetworkLog.getClassPath(Thread.currentThread().getStackTrace()) ,
@@ -61,7 +93,6 @@ public class ConfigManager {
                     "\nhostName : " + hostName,
                     "\nendPoint : " + endPoint
             );
-//            callback.onFailure(null, new Exception("Error : Base URL not set yet"));
             callback.onError(ResponseStatusCode.ERROR_BASE_URL, new Exception("Error : Base URL not set yet"));
         }
     }
