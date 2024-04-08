@@ -43,11 +43,15 @@ public class ConfigManager {
     }
 
     public void getData(@ApiRequestType int reqType, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
-        getData(reqType, HOST_DEFAULT, endPoint, params, callback);
+        getData(true, reqType, HOST_DEFAULT, endPoint, params, callback);
     }
 
     public void getData(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
         getData(true, reqType, hostName, endPoint, params, callback);
+    }
+
+    public void getDataBackground(@ApiRequestType int reqType, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
+        getData(false, reqType, HOST_DEFAULT, endPoint, params, callback);
     }
 
     @WorkerThread
