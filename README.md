@@ -1,6 +1,6 @@
 # api-config-lite
 
-#### Library size is : Kb
+#### Library size is : 1000Kb
 
 ## Setup Project
 
