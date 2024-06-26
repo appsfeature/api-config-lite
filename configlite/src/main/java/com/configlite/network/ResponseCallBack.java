@@ -83,7 +83,7 @@ public class ResponseCallBack<T> implements Callback<T> {
     }
 
     private void notifyCallback(Call<T> call, int responseCode, String errorMessage, Throwable t) {
-        onNetworkCall.onComplete(false, null);
+//        onNetworkCall.onComplete(false, null);
 //        onNetworkCall.onResponse(call, null);
 //        onNetworkCall.onFailure(call, new Exception(t));
 
