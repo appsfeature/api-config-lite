@@ -38,7 +38,7 @@ public class BaseNetworkManager {
             }
 
             @Override
-            public void onError(int responseCode, Exception e) {
+            public void onError(int responseCode, String errorMessage, Exception e) {
                 callback.onProgressUpdate(false);
                 callback.onFailure(e);
             }

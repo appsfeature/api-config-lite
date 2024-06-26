@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import com.configlite.callback.NetworkCallback;
 import com.configlite.type.NetworkModel;
 import com.configlite.type.ResponseStatusCode;
+import com.configlite.util.NetworkError;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -51,18 +52,18 @@ public class ResponseCallBack<T> implements Callback<T> {
                 }
 //                onNetworkCall.onResponse(call, response);
             } else {
-                notifyCallback(call, responseCode, new Throwable("Invalid response body"));
+                notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_BODY, new Throwable(NetworkError.INVALID_RESPONSE_BODY));
             }
         } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND
                 || responseCode == BAD_GATEWAY || responseCode == SERVICE_UNAVAILABLE
                 || responseCode == GATEWAY_TIMEOUT || responseCode == REQUEST_TIMEOUT) {
             if(responseCode == REQUEST_TIMEOUT){
-                notifyCallback(call, responseCode, new SocketTimeoutException());
+                notifyCallback(call, responseCode, NetworkError.REQUEST_TIMEOUT, new SocketTimeoutException());
             }else {
-                notifyCallback(call, responseCode, new Throwable("Invalid response code : " + responseCode));
+                notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_CODE, new Throwable(NetworkError.INVALID_RESPONSE_CODE + " : " + responseCode));
             }
         } else {
-            notifyCallback(call, responseCode, new Throwable("Invalid response code"));
+            notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_CODE, new Throwable(NetworkError.INVALID_RESPONSE_CODE));
         }
         if(!isRequestCompletedCalled) {
             isRequestCompletedCalled = true;
@@ -74,14 +75,14 @@ public class ResponseCallBack<T> implements Callback<T> {
 
     @Override
     public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-        notifyCallback(call, ResponseStatusCode.BAD_REQUEST, t);
+        notifyCallback(call, ResponseStatusCode.BAD_REQUEST, NetworkError.SERVER_ERROR_MESSAGE, t);
         if(!isRequestCompletedCalled) {
             isRequestCompletedCalled = true;
             onNetworkCall.onRequestCompleted();
         }
     }
 
-    private void notifyCallback(Call<T> call, int responseCode, Throwable t) {
+    private void notifyCallback(Call<T> call, int responseCode, String errorMessage, Throwable t) {
         onNetworkCall.onComplete(false, null);
 //        onNetworkCall.onResponse(call, null);
 //        onNetworkCall.onFailure(call, new Exception(t));
@@ -103,7 +104,7 @@ public class ResponseCallBack<T> implements Callback<T> {
             onNetworkCall.onRetry(retryCallback, new Exception(t));
         }
         //Trigger on all type of error occurs.
-        onNetworkCall.onError(responseCode, new Exception(t));
+        onNetworkCall.onError(responseCode, errorMessage, new Exception(t));
     }
 
 }

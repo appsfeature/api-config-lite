@@ -14,6 +14,7 @@ import com.configlite.type.ApiHost;
 import com.configlite.type.ApiRequestType;
 import com.configlite.type.NetworkTimeOut;
 import com.configlite.type.ResponseStatusCode;
+import com.configlite.util.NetworkError;
 import com.configlite.util.NetworkLog;
 import com.configlite.util.NetworkUtility;
 
@@ -87,7 +88,7 @@ public class ConfigManager {
                             "\nendPoint : " + endPoint,
                             e.toString()
                     );
-                    callback.onError(ResponseStatusCode.ERROR_BASE_URL, new Exception("Error : Base URL not set yet"));
+                    callback.onError(ResponseStatusCode.ERROR_BASE_URL, NetworkError.BASE_URL_ERROR, new Exception(NetworkError.BASE_URL_ERROR));
                 }
             }
         }else {
@@ -97,7 +98,7 @@ public class ConfigManager {
                     "\nhostName : " + hostName,
                     "\nendPoint : " + endPoint
             );
-            callback.onError(ResponseStatusCode.ERROR_BASE_URL, new Exception("Error : Base URL not set yet"));
+            callback.onError(ResponseStatusCode.ERROR_BASE_URL, NetworkError.BASE_URL_ERROR, new Exception("Error : Base URL not set yet"));
         }
     }
 

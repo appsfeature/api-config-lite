@@ -11,7 +11,7 @@ public interface NetworkCallback {
     interface Response<T> {
         void onComplete(boolean status, T response);
 
-        void onError(int responseCode, Exception e);
+        void onError(int responseCode, String errorMessage, Exception e);
 
         default void onRetry(Retry retryCallback, Exception e) {
         }
