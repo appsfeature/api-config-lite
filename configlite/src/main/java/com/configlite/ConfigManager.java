@@ -66,11 +66,11 @@ public class ConfigManager {
         if(apiInterface != null) {
             Call<NetworkModel> request;
             if (reqType == ApiRequestType.POST) {
-                request = apiInterface.requestPost(endPoint, params);
+                request = apiInterface.requestPost(endPoint, validateParams(params));
             } else if (reqType == ApiRequestType.POST_FORM) {
-                request = apiInterface.requestPostDataForm(endPoint, params);
+                request = apiInterface.requestPostDataForm(endPoint, validateParams(params));
             } else {
-                request = apiInterface.requestGet(endPoint, params);
+                request = apiInterface.requestGet(endPoint, validateParams(params));
             }
             if(isRunOnMainThread) {
                 request.enqueue(new ResponseCallBack<>(callback));
@@ -101,6 +101,15 @@ public class ConfigManager {
             );
             callback.onError(ResponseStatusCode.ERROR_BASE_URL, NetworkError.BASE_URL_ERROR, new Exception("Error : Base URL not set yet"));
         }
+    }
+
+    public Map<String, String> validateParams(Map<String, String> params) {
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (entry.getValue() == null) {
+                entry.setValue("");
+            }
+        }
+        return params;
     }
 
     @Nullable

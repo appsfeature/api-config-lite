@@ -34,7 +34,7 @@ public class AppApplication extends Application {
             timeout.setReadTimeout(30);
             configManager = ConfigManager.getInstance()
                     .setDebugMode(BuildConfig.DEBUG)
-                    .setEncDataKey("test1")
+                    .setEncDataKey("test")
                     .setTimeout(timeout)
                     .setEnableSecurityCode(instance)
                     .addHostUrl(ApiHost.HOST_DEFAULT, BASE_URL);
