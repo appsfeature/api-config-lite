@@ -51,13 +51,13 @@ public class NetworkLog {
     }
 
     public static void log(String log) {
-        if(ConfigManager.getInstance().isEnableDebugMode()){
+        if(ConfigManager.getInstance().isDebugMode()){
             Log.d(TAG, log);
         }
     }
 
     public static void logError(String log) {
-        if(ConfigManager.getInstance().isEnableDebugMode()){
+        if(ConfigManager.getInstance().isDebugMode()){
             Log.e(TAG, log);
         }
     }

@@ -31,9 +31,10 @@ public class ConfigManager {
     private final HashMap<String, RetrofitApiInterface> apiInterfaceHashMap = new HashMap<>();
     private final HashMap<String, String> headersMap = new HashMap<>();
     public static final String HOST_DEFAULT = ApiHost.HOST_DEFAULT;
-    private boolean isEnableDebugMode = false;
+    private boolean isDebugMode = false;
     private String securityCode;
     private NetworkTimeOut timeout;
+    private String encDataKey;
 
     private ConfigManager() {
     }
@@ -133,7 +134,7 @@ public class ConfigManager {
         if (apiInterfaceHashMap.get(hostBaseUrl) != null) {
             return apiInterfaceHashMap.get(hostBaseUrl);
         } else {
-            RetrofitApiInterface apiInterface = RetrofitBuilder.getClient(hostBaseUrl, getSecurityCode(), isEnableDebugMode())
+            RetrofitApiInterface apiInterface = RetrofitBuilder.getClient(hostBaseUrl, getSecurityCode(), isDebugMode())
                     .create(RetrofitApiInterface.class);
             apiInterfaceHashMap.put(hostBaseUrl, apiInterface);
             return apiInterface;
@@ -142,12 +143,12 @@ public class ConfigManager {
 
     public static final String TAG_OK_HTTP = ConfigManager.class.getSimpleName() + "-okhttp-log";
 
-    public boolean isEnableDebugMode() {
-        return isEnableDebugMode;
+    public boolean isDebugMode() {
+        return isDebugMode;
     }
 
-    public ConfigManager setEnableDebugMode(boolean isEnableDebugMode) {
-        this.isEnableDebugMode = isEnableDebugMode;
+    public ConfigManager setDebugMode(boolean isEnableDebugMode) {
+        this.isDebugMode = isEnableDebugMode;
         return this;
     }
 
@@ -181,6 +182,15 @@ public class ConfigManager {
 
     public ConfigManager setEnableSecurityCode(Context context) {
         this.securityCode = NetworkUtility.getSecurityCode(context);
+        return this;
+    }
+
+    public String getEncDataKey() {
+        return encDataKey;
+    }
+
+    public ConfigManager setEncDataKey(String encDataKey) {
+        this.encDataKey = encDataKey;
         return this;
     }
 }

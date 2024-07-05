@@ -1,33 +1,29 @@
 package com.sample.apiconfiglite;
 
 import android.app.Application;
-import android.content.Context;
+import android.util.Log;
 
 import com.configlite.ConfigManager;
 import com.configlite.type.ApiHost;
 import com.configlite.type.NetworkTimeOut;
+import com.configlite.util.ConfigEncryption;
 
 public class AppApplication extends Application {
 
 
-    private static final String BASE_URL = "http://yourdomain.com/apps/api/v1/database/";
+    private static final String BASE_URL = "NT+m8pLMZKlWWpudyDZh5IXoj1+qZS2ecrIwn9veup2QAuJCxx8jJ25zZ9IoS6ds";
 
     private static volatile AppApplication instance;
 
     public static AppApplication getInstance() {
-        if (instance == null) {
-            synchronized (AppApplication.class) {
-                if (instance == null) instance = new AppApplication();
-            }
-        }
         return instance;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         configManager = getConfigManager();
-
     }
 
     private ConfigManager configManager;
@@ -37,9 +33,10 @@ public class AppApplication extends Application {
             NetworkTimeOut timeout = new NetworkTimeOut();
             timeout.setReadTimeout(30);
             configManager = ConfigManager.getInstance()
-                    .setEnableDebugMode(BuildConfig.DEBUG)
+                    .setDebugMode(BuildConfig.DEBUG)
+                    .setEncDataKey("test1")
                     .setTimeout(timeout)
-                    .setEnableSecurityCode(AppApplication.this)
+                    .setEnableSecurityCode(instance)
                     .addHostUrl(ApiHost.HOST_DEFAULT, BASE_URL);
         }
         return configManager;

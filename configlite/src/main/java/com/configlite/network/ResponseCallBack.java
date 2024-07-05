@@ -54,16 +54,8 @@ public class ResponseCallBack<T> implements Callback<T> {
             } else {
                 notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_BODY, new Throwable(NetworkError.INVALID_RESPONSE_BODY));
             }
-        } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND
-                || responseCode == BAD_GATEWAY || responseCode == SERVICE_UNAVAILABLE
-                || responseCode == GATEWAY_TIMEOUT || responseCode == REQUEST_TIMEOUT) {
-            if(responseCode == REQUEST_TIMEOUT){
-                notifyCallback(call, responseCode, NetworkError.REQUEST_TIMEOUT, new SocketTimeoutException());
-            }else {
-                notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_CODE, new Throwable(NetworkError.INVALID_RESPONSE_CODE + " : " + responseCode));
-            }
         } else {
-            notifyCallback(call, responseCode, NetworkError.INVALID_RESPONSE_CODE, new Throwable(NetworkError.INVALID_RESPONSE_CODE));
+            notifyCallback(call, responseCode, getErrorMessage(responseCode), new Throwable(NetworkError.INVALID_RESPONSE_CODE));
         }
         if(!isRequestCompletedCalled) {
             isRequestCompletedCalled = true;
@@ -75,7 +67,11 @@ public class ResponseCallBack<T> implements Callback<T> {
 
     @Override
     public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-        notifyCallback(call, ResponseStatusCode.BAD_REQUEST, NetworkError.SERVER_ERROR_MESSAGE, t);
+        if(t instanceof SocketTimeoutException){
+            notifyCallback(call, ResponseStatusCode.REQUEST_TIMEOUT, NetworkError.REQUEST_TIMEOUT, t);
+        }else {
+            notifyCallback(call, ResponseStatusCode.BAD_REQUEST, NetworkError.SERVER_ERROR_MESSAGE, t);
+        }
         if(!isRequestCompletedCalled) {
             isRequestCompletedCalled = true;
             onNetworkCall.onRequestCompleted();
@@ -106,5 +102,29 @@ public class ResponseCallBack<T> implements Callback<T> {
         //Trigger on all type of error occurs.
         onNetworkCall.onError(responseCode, errorMessage, new Exception(t));
     }
+
+    private String getErrorMessage(int responseCode) {
+        switch (responseCode){
+            case INTERNAL_SERVER_ERROR:
+                return NetworkError.SERVER_ERROR_MESSAGE + getErrorCode(responseCode);
+            case NOT_FOUND:
+                return"Server Error, API not found" + getErrorCode(responseCode);
+            case BAD_GATEWAY:
+                return "Server Error, Bad Gateway" + getErrorCode(responseCode);
+            case SERVICE_UNAVAILABLE:
+                return "Server Error, Service Unavailable" + getErrorCode(responseCode);
+            case GATEWAY_TIMEOUT:
+                return "Server Error, Gateway Timeout" + getErrorCode(responseCode);
+            case REQUEST_TIMEOUT:
+                return NetworkError.REQUEST_TIMEOUT + getErrorCode(responseCode);
+            default:
+                return NetworkError.INVALID_RESPONSE_CODE + getErrorCode(responseCode);
+        }
+    }
+
+    private String getErrorCode(int responseCode) {
+        return "\nErrorCode:" + responseCode + " ";
+    }
+
 
 }

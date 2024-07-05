@@ -10,15 +10,13 @@ import com.configlite.type.NetworkModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import retrofit2.Call;
-
 public class BaseNetworkManager {
 
     protected final ConfigManager configManager;
 
     public BaseNetworkManager(Context context, String baseUrl) {
         this(ConfigManager.getInstance()
-                .setEnableDebugMode(true)
+                .setDebugMode(true)
                 .setEnableSecurityCode(context)
                 .addHostUrl(ApiHost.HOST_DEFAULT, baseUrl));
     }

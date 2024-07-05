@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.configlite.ConfigManager;
+import com.configlite.util.ConfigEncryption;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitBuilder {
 
     public static Retrofit getClient(String host, String securityCode) {
-        return getClient(host, securityCode, ConfigManager.getInstance().isEnableDebugMode());
+        return getClient(host, securityCode, ConfigManager.getInstance().isDebugMode());
     }
 
     public static Retrofit getClient(String host, String securityCode, boolean isDebug) {
@@ -32,7 +33,7 @@ public class RetrofitBuilder {
                 .setLenient()
                 .create();
         return new Retrofit.Builder()
-                .baseUrl(host)
+                .baseUrl(ConfigEncryption.get(host))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(getHttpClient(securityCode, isDebug).build())
                 .build();
