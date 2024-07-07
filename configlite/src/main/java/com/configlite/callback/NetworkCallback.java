@@ -1,7 +1,5 @@
 package com.configlite.callback;
 
-import retrofit2.Call;
-
 public interface NetworkCallback {
 
     interface Retry{
