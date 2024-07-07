@@ -21,7 +21,7 @@ Add this to your project build.gradle
 [![](https://jitpack.io/v/appsfeature/api-config-lite.svg)](https://jitpack.io/#appsfeature/api-config-lite)
 ```gradle
 dependencies {
-        implementation 'com.github.appsfeature:api-config-lite:1.0'
+        implementation 'com.github.appsfeature:api-config-lite:1.1'
 }
 ```
 
