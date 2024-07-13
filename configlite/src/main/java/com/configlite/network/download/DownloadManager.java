@@ -42,24 +42,31 @@ import retrofit2.Response;
 
 public class DownloadManager {
 
-    private static File baseDirectory;
+    private File baseDirectory;
     private final Progress progress;
     private String fileName;
+    private String baseUrl;
 
     /**
      * @param baseDirectory : Folder where save file
      */
-    public static void setBaseDirectory(File baseDirectory) {
-        DownloadManager.baseDirectory = baseDirectory;
+    public DownloadManager setBaseDirectory(File baseDirectory) {
+        this.baseDirectory = baseDirectory;
+        return this;
     }
 
     /**
      * @param fileName : fileName of file to download
      */
-    public void setFileName(String fileName) {
+    public DownloadManager setFileName(String fileName) {
         this.fileName = fileName;
+        return this;
     }
 
+    public DownloadManager setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
+    }
 
     public DownloadManager(Context context) {
         this.progress = (Progress) context;
@@ -129,7 +136,12 @@ public class DownloadManager {
         if (ConfigManager.getInstance() != null) {
             Map<String, String> map = new HashMap<>();
 
-            RetrofitApiInterface apiInterface = ConfigManager.getInstance().getApiDownloadInterface(ApiHost.HOST_DOWNLOAD);
+            RetrofitApiInterface apiInterface;
+            if(!TextUtils.isEmpty(baseUrl)) {
+                apiInterface = ConfigManager.getInstance().getHostDownloadInterface(baseUrl);
+            }else {
+                apiInterface = ConfigManager.getInstance().getApiDownloadInterface(ApiHost.HOST_DOWNLOAD);
+            }
             if (apiInterface != null) {
                 apiInterface.downloadPDFFileWithDynamicUrlAsync(fileUrl, map).enqueue(new Callback<>() {
                     @Override

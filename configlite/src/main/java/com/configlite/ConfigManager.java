@@ -179,7 +179,7 @@ public class ConfigManager {
         return getHostDownloadInterface(getHostBaseUrl(hostName));
     }
 
-    private RetrofitApiInterface getHostDownloadInterface(String hostBaseUrl) {
+    public RetrofitApiInterface getHostDownloadInterface(String hostBaseUrl) {
         if(TextUtils.isEmpty(hostBaseUrl)) return null;
         if (apiInterfaceHashMap.get(hostBaseUrl) != null) {
             return apiInterfaceHashMap.get(hostBaseUrl);
