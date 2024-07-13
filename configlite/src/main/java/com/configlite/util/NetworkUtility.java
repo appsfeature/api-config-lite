@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Base64;
 
@@ -13,6 +15,25 @@ import java.security.NoSuchAlgorithmException;
 
 public class NetworkUtility {
 
+
+    public static boolean isConnected(Context context) {
+        boolean isConnected = false;
+        try {
+            if ( context != null && context.getSystemService(Context.CONNECTIVITY_SERVICE) != null
+                    && context.getSystemService(Context.CONNECTIVITY_SERVICE) instanceof ConnectivityManager) {
+                ConnectivityManager connectivityManager =
+                        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                isConnected = false;
+                if (connectivityManager != null) {
+                    NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                    isConnected = (activeNetwork != null) && (activeNetwork.isConnected());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isConnected;
+    }
 
     public static String getSecurityCode(Context ctx) {
         String keyHash = null;

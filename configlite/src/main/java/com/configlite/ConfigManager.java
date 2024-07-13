@@ -1,11 +1,15 @@
 package com.configlite;
 
 import android.content.Context;
+import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.configlite.callback.NetworkCallback;
+import com.configlite.network.download.ConfigDownloadListener;
+import com.configlite.network.download.DownloadProgressCallback;
 import com.configlite.type.NetworkModel;
 import com.configlite.network.ResponseCallBack;
 import com.configlite.network.RetrofitApiInterface;
@@ -22,7 +26,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ConfigManager {
@@ -30,7 +38,6 @@ public class ConfigManager {
     private final HashMap<String, String> apiHostUrlHashMap = new HashMap<>();
     private final HashMap<String, RetrofitApiInterface> apiInterfaceHashMap = new HashMap<>();
     private final HashMap<String, String> headersMap = new HashMap<>();
-    public static final String HOST_DEFAULT = ApiHost.HOST_DEFAULT;
     private boolean isDebugMode = false;
     private String securityCode;
     private NetworkTimeOut timeout;
@@ -45,7 +52,7 @@ public class ConfigManager {
     }
 
     public void getData(@ApiRequestType int reqType, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
-        getData(true, reqType, HOST_DEFAULT, endPoint, params, callback);
+        getData(true, reqType, ApiHost.HOST_MAIN, endPoint, params, callback);
     }
 
     public void getData(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
@@ -53,7 +60,7 @@ public class ConfigManager {
     }
 
     public void getDataBackground(@ApiRequestType int reqType, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
-        getData(false, reqType, HOST_DEFAULT, endPoint, params, callback);
+        getData(false, reqType, ApiHost.HOST_MAIN, endPoint, params, callback);
     }
 
     @WorkerThread
@@ -61,7 +68,19 @@ public class ConfigManager {
         getData(false, reqType, hostName, endPoint, params, callback);
     }
 
+    public void uploadData(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, RequestBody requestBody, MultipartBody.Part multipartBody, NetworkCallback.Response<NetworkModel> callback) {
+        getData(true, reqType, hostName, endPoint, params, requestBody, multipartBody, callback);
+    }
+
+    public void uploadDataBackground(@ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, RequestBody requestBody, MultipartBody.Part multipartBody, NetworkCallback.Response<NetworkModel> callback) {
+        getData(false, reqType, hostName, endPoint, params, requestBody, multipartBody, callback);
+    }
+
     private void getData(boolean isRunOnMainThread, @ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, NetworkCallback.Response<NetworkModel> callback) {
+        getData(isRunOnMainThread, reqType, hostName, endPoint, params, null, null, callback);
+    }
+
+    private void getData(boolean isRunOnMainThread, @ApiRequestType int reqType, String hostName, String endPoint, Map<String, String> params, RequestBody requestBody, MultipartBody.Part multipartBody, NetworkCallback.Response<NetworkModel> callback) {
         RetrofitApiInterface apiInterface = getApiInterface(hostName);
         if(apiInterface != null) {
             Call<NetworkModel> request;
@@ -69,6 +88,10 @@ public class ConfigManager {
                 request = apiInterface.requestPost(endPoint, validateParams(params));
             } else if (reqType == ApiRequestType.POST_FORM) {
                 request = apiInterface.requestPostDataForm(endPoint, validateParams(params));
+            } else if (reqType == ApiRequestType.POST_MULTIPART) {
+                request = apiInterface.requestPost(endPoint, validateParams(params), requestBody, multipartBody);
+            } else if (reqType == ApiRequestType.POST_FORM_MULTIPART) {
+                request = apiInterface.requestPostDataForm(endPoint, validateParams(params), requestBody, multipartBody);
             } else {
                 request = apiInterface.requestGet(endPoint, validateParams(params));
             }
@@ -139,7 +162,7 @@ public class ConfigManager {
     }
 
     private RetrofitApiInterface getHostInterface(String hostBaseUrl) {
-        if(hostBaseUrl == null) return null;
+        if(TextUtils.isEmpty(hostBaseUrl)) return null;
         if (apiInterfaceHashMap.get(hostBaseUrl) != null) {
             return apiInterfaceHashMap.get(hostBaseUrl);
         } else {
@@ -148,6 +171,50 @@ public class ConfigManager {
             apiInterfaceHashMap.put(hostBaseUrl, apiInterface);
             return apiInterface;
         }
+    }
+
+    // used for download file with progress update
+    @Nullable
+    public RetrofitApiInterface getApiDownloadInterface(String hostName) {
+        return getHostDownloadInterface(getHostBaseUrl(hostName));
+    }
+
+    private RetrofitApiInterface getHostDownloadInterface(String hostBaseUrl) {
+        if(TextUtils.isEmpty(hostBaseUrl)) return null;
+        if (apiInterfaceHashMap.get(hostBaseUrl) != null) {
+            return apiInterfaceHashMap.get(hostBaseUrl);
+        } else {
+            RetrofitApiInterface apiInterface = RetrofitBuilder.getClient(hostBaseUrl, getSecurityCode(), mProgressListener, isDebugMode())
+                    .create(RetrofitApiInterface.class);
+            apiInterfaceHashMap.put(hostBaseUrl, apiInterface);
+            return apiInterface;
+        }
+    }
+
+    private final DownloadProgressCallback mProgressListener = new DownloadProgressCallback() {
+        @Override
+        public void update(long bytesRead, long contentLength, boolean done) {
+            try {
+                int progressUpdate = (int) ((bytesRead * 100) / contentLength);
+                if (mDownloadListener != null) {
+                    mDownloadListener.onProgressUpdate(progressUpdate);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    public ConfigDownloadListener mDownloadListener;
+
+    /**
+     * @param downloadListener  add Handler for show data on Main Thread
+     * @return Note. getting data in background thread.
+     */
+    public ConfigManager setDownloadListener(ConfigDownloadListener downloadListener) {
+        mDownloadListener = null;
+        this.mDownloadListener = downloadListener;
+        return this;
     }
 
     public static final String TAG_OK_HTTP = ConfigManager.class.getSimpleName() + "-okhttp-log";

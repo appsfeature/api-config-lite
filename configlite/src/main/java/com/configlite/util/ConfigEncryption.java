@@ -8,11 +8,11 @@ import com.helper.util.EncryptionHandler;
 
 public class ConfigEncryption {
 
-    public static String get(String fbServerId) {
+    public static String get(String encData) {
         if(!TextUtils.isEmpty(ConfigManager.getInstance().getEncDataKey())){
-            return EncryptionHandler.decrypt(ConfigManager.getInstance().getEncDataKey(), fbServerId);
+            return EncryptionHandler.decrypt(ConfigManager.getInstance().getEncDataKey(), encData);
         }else {
-            return fbServerId;
+            return encData;
         }
     }
 

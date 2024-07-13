@@ -37,7 +37,7 @@ public class AppApplication extends Application {
                     .setEncDataKey("test")
                     .setTimeout(timeout)
                     .setEnableSecurityCode(instance)
-                    .addHostUrl(ApiHost.HOST_DEFAULT, BASE_URL);
+                    .addHostUrl(ApiHost.HOST_MAIN, BASE_URL);
         }
         return configManager;
     }

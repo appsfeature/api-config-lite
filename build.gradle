@@ -5,7 +5,8 @@ plugins {
 }
 
 ext {
-    annotation = '1.8.0'
+    appcompat = '1.7.0'
+//    annotation = '1.8.0'
 
     retrofit_version = '2.11.0'
     retrofit_okhttp_version = '4.12.0'

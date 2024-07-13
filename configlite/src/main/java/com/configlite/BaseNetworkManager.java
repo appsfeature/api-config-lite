@@ -18,7 +18,7 @@ public class BaseNetworkManager {
         this(ConfigManager.getInstance()
                 .setDebugMode(true)
                 .setEnableSecurityCode(context)
-                .addHostUrl(ApiHost.HOST_DEFAULT, baseUrl));
+                .addHostUrl(ApiHost.HOST_MAIN, baseUrl));
     }
     public BaseNetworkManager(ConfigManager configManager) {
         this.configManager = configManager;

@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.configlite.ConfigManager;
+import com.configlite.network.download.DownloadProgressCallback;
+import com.configlite.network.download.DownloadProgressInterceptor;
 import com.configlite.util.ConfigEncryption;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,17 +31,25 @@ public class RetrofitBuilder {
     }
 
     public static Retrofit getClient(String host, String securityCode, boolean isDebug) {
+        return getClient(host, securityCode, null, isDebug);
+    }
+
+    public static Retrofit getClient(String host, String securityCode, DownloadProgressCallback progressListener, boolean isDebug) {
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
         return new Retrofit.Builder()
                 .baseUrl(ConfigEncryption.get(host))
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(getHttpClient(securityCode, isDebug).build())
+                .client(getHttpClient(securityCode, isDebug, progressListener).build())
                 .build();
     }
 
-    private static OkHttpClient.Builder getHttpClient(final String securityCode, boolean isDebug) {
+    private static OkHttpClient.Builder getHttpClient(final String securityCode, boolean isDebug, DownloadProgressCallback progressListener) {
+        DownloadProgressInterceptor progressInterceptor = null;
+        if(progressListener != null) {
+            progressInterceptor =new DownloadProgressInterceptor(progressListener);
+        }
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @NonNull
@@ -51,7 +61,7 @@ public class RetrofitBuilder {
                         if (!TextUtils.isEmpty(securityCode)) {
                             request.header("Authorization", securityCode);
                         }
-                        if (ConfigManager.getInstance().getHeadersMap().size() > 0) {
+                        if (!ConfigManager.getInstance().getHeadersMap().isEmpty()) {
                             for (Map.Entry<String, String> entry : ConfigManager.getInstance().getHeadersMap().entrySet()) {
                                 String key = entry.getKey();
                                 String value = entry.getValue();
@@ -65,6 +75,9 @@ public class RetrofitBuilder {
             builder.readTimeout(ConfigManager.getInstance().getTimeout().getReadTimeout(), TimeUnit.SECONDS);
             builder.connectTimeout(ConfigManager.getInstance().getTimeout().getConnectTimeout(), TimeUnit.SECONDS);
             builder.writeTimeout(ConfigManager.getInstance().getTimeout().getWriteTimeout(), TimeUnit.SECONDS);
+        }
+        if(progressInterceptor != null){
+            builder.addInterceptor(progressInterceptor);
         }
         if (isDebug) {
             builder.addInterceptor(loggingInterceptor);
