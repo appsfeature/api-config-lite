@@ -312,7 +312,7 @@ public class DownloadManager {
 //        }
     }
 
-    public static File getValidFile(String fileName) {
+    public File getValidFile(String fileName) {
         return new File(baseDirectory, fileName);
     }
 
@@ -349,7 +349,7 @@ public class DownloadManager {
         }
     }
 
-    public static List<String> getStorageFileList() {
+    public List<String> getStorageFileList() {
         List<String> result = new ArrayList<>();
         try {
             File path = baseDirectory;
