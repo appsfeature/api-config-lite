@@ -63,6 +63,9 @@ public class DownloadManager {
         return this;
     }
 
+    /**
+     * @param baseUrl : baseUrl of file to download
+     */
     public DownloadManager setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
