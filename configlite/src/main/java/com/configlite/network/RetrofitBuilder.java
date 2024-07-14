@@ -8,6 +8,7 @@ import com.configlite.ConfigManager;
 import com.configlite.network.download.DownloadProgressCallback;
 import com.configlite.network.download.DownloadProgressInterceptor;
 import com.configlite.util.ConfigEncryption;
+import com.configlite.util.NetworkLog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,14 +36,24 @@ public class RetrofitBuilder {
     }
 
     public static Retrofit getClient(String host, String securityCode, DownloadProgressCallback progressListener, boolean isDebug) {
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
-        return new Retrofit.Builder()
-                .baseUrl(ConfigEncryption.get(host))
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(getHttpClient(securityCode, isDebug, progressListener).build())
-                .build();
+        try {
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+            return new Retrofit.Builder()
+                    .baseUrl(ConfigEncryption.get(host))
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(getHttpClient(securityCode, isDebug, progressListener).build())
+                    .build();
+        } catch (IllegalArgumentException e) {
+            NetworkLog.logIntegration(ConfigManager.TAG_OK_HTTP, NetworkLog.getClassPath(Thread.currentThread().getStackTrace()) ,
+                    "\nError : " + e.getMessage(),
+                    "\nbaseUrl : BaseUrl not found",
+                    "\nbaseUrl : " + host,
+                    "\nbaseUrlDec : " + ConfigEncryption.get(host)
+            );
+            return null;
+        }
     }
 
     private static OkHttpClient.Builder getHttpClient(final String securityCode, boolean isDebug, DownloadProgressCallback progressListener) {
